@@ -55,7 +55,7 @@ import {
 } from "./lib";
 import { freeFightOutfit } from "./outfit";
 import { withStash } from "./clan";
-import { set, withChoice, withChoices } from "libram/dist/property";
+import { set, withChoice, withChoices } from "libram";
 import { estimatedTurns } from "./globalvars";
 import { Macro } from "./combat";
 

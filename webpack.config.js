@@ -23,11 +23,11 @@ const sharedConfig = {
         // Include ts, tsx, js, and jsx files.
         test: /\.(ts|js)x?$/,
         // exclude: /node_modules/,
-        loader: "babel-loader",
+        loader: require.resolve("babel-loader"),
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: [MiniCssExtractPlugin.loader, require.resolve("css-loader")],
       },
     ],
   },
@@ -68,7 +68,7 @@ const otherRelayConfig = merge(
           // Include ts, tsx, js, and jsx files.
           test: /\.(ts|js)x?$/,
           // exclude: /node_modules/,
-          loader: "babel-loader",
+          loader: require.resolve("babel-loader"),
         },
       ],
     },
@@ -91,7 +91,7 @@ const relayConfig = merge(
           // Include ts, tsx, js, and jsx files.
           test: /\.(ts|js)x?$/,
           // exclude: /node_modules/,
-          loader: "babel-loader",
+          loader: require.resolve("babel-loader"),
           options: { presets: ["@babel/env", "@babel/preset-react"] },
         },
       ],

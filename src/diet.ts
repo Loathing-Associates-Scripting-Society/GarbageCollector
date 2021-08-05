@@ -45,7 +45,7 @@ import {
   have,
   set,
 } from "libram";
-import { withChoice } from "libram/dist/property";
+import { withChoice } from "libram";
 import { acquire } from "./acquire";
 import { embezzlerCount } from "./fights";
 import { estimatedTurns, globalOptions } from "./globalvars";

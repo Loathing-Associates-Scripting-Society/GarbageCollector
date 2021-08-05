@@ -77,7 +77,7 @@ import {
   waterBreathingEquipment,
 } from "./outfit";
 import { withStash, withVIPClan } from "./clan";
-import { withProperties } from "libram/dist/property";
+import { withProperties } from "libram";
 import { estimatedTurns, globalOptions, log } from "./globalvars";
 
 // Max price for tickets. You should rethink whether Barf is the best place if they're this expensive.
