@@ -34,19 +34,6 @@ export function estimatedGarboTurns(): number {
       : 0;
   const thumbRingMultiplier = usingThumbRing() ? 1 / 0.96 : 1;
 
-  // We need to estimate adventures from our organs if we are only dieting after yachtzee chaining
-  const yachtzeeTurns = 30; // guesstimate
-  const adventuresAfterChaining =
-    globalOptions.prefs.yachtzeechain && !get("_garboYachtzeeChainCompleted")
-      ? Math.max(
-          potentialFullnessAdventures() +
-            potentialInebrietyAdventures() +
-            potentialNonOrganAdventures() -
-            yachtzeeTurns,
-          0,
-        )
-      : 0;
-
   let turns;
   if (globalOptions.stopTurncount) turns = globalOptions.stopTurncount - myTurncount();
   else if (globalOptions.nobarf) turns = embezzlerCount();
@@ -55,8 +42,7 @@ export function estimatedGarboTurns(): number {
       (myAdventures() +
         sausageAdventures +
         pantsgivingAdventures +
-        thesisAdventures +
-        adventuresAfterChaining -
+        thesisAdventures -
         globalOptions.saveTurns) *
       thumbRingMultiplier;
   } else {
@@ -65,8 +51,7 @@ export function estimatedGarboTurns(): number {
         sausageAdventures +
         pantsgivingAdventures +
         nightcapAdventures +
-        thesisAdventures +
-        adventuresAfterChaining) *
+        thesisAdventures) *
       thumbRingMultiplier;
   }
 

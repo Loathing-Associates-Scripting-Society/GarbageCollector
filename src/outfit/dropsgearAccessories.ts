@@ -21,7 +21,6 @@ import {
   monsterManuelAvailable,
 } from "../lib";
 import { garboValue } from "../garboValue";
-import { globalOptions } from "../config";
 
 function mafiaThumbRing(mode: BonusEquipMode) {
   if (!have($item`mafia thumb ring`) || modeIsFree(mode)) {
@@ -85,8 +84,6 @@ function cinchoDeMayo(mode: BonusEquipMode) {
     mode === BonusEquipMode.EMBEZZLER ||
     // Require manuel to make sure we don't kill during stasis
     !monsterManuelAvailable() ||
-    // Don't use Cincho if we're planning on doing yachtzees, and haven't completed them yet
-    (!get("_garboYachtzeeChainCompleted") && globalOptions.prefs.yachtzeechain) ||
     // If we have more than 50 passive damage, we'll never be able to cast projectile pinata without risking the monster dying
     maxPassiveDamage() >= 50
   ) {

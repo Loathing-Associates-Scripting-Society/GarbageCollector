@@ -32,11 +32,6 @@
     "description": "Should a dinsey day pass be bought with FunFunds (if possible) at the end of the script?"
   },
   {
-    "name": "garbo_yachtzeechain",
-    "type": "boolean",
-    "description": "only diets after free fights, and attempts to estimate if Yachtzee! chaining is profitable for you. Requires Spring Break Beach access (it will not grab a one-day pass for you, but will make an attempt if one is used)."
-  },
-  {
     "name": "garbo_skipPillCheck",
     "type": "boolean",
     "description": "Should skip prompting you to go acquire distention and synthetic dog hair pills? Set to true if you want to proceed without them, and false if you want to be reminded."

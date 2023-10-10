@@ -122,11 +122,7 @@ const availableItems = [
 
 const validPawWishes: Map<Effect, string> = new Map(
   wishableEffectData
-    .filter(
-      ({ e, name }) =>
-        !invalidWishStrings.includes(name) &&
-        (globalOptions.prefs.yachtzeechain ? e !== $effect`Eau d' Clochard` : true), // hardcoded heuristics
-    )
+    .filter(({ name }) => !invalidWishStrings.includes(name))
     .map(({ e, name, splitName }) => {
       if (!name.match(INVALID_CHARS_REGEX)) return [e, name];
 

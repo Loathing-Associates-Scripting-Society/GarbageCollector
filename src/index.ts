@@ -118,7 +118,6 @@ export function main(argString = ""): void {
   }
 
   Args.fill(globalOptions, argString);
-  globalOptions.prefs.yachtzeechain = false;
   if (globalOptions.version) return; // Since we always print the version, all done!
   if (globalOptions.help) {
     Args.showHelp(globalOptions);
@@ -465,15 +464,7 @@ export function main(argString = ""): void {
     withStash(stashItems, () => {
       withVIPClan(() => {
         // 0. diet stuff.
-        if (globalOptions.nodiet || get("_garboYachtzeeChainCompleted", false)) {
-          print("We should not be yachtzee chaining", "red");
-          globalOptions.prefs.yachtzeechain = false;
-        }
-
-        if (
-          !globalOptions.nodiet &&
-          (!globalOptions.prefs.yachtzeechain || get("_garboYachtzeeChainCompleted", false))
-        ) {
+        if (!globalOptions.nodiet) {
           runDiet();
         } else if (!globalOptions.simdiet) {
           nonOrganAdventures();
@@ -497,8 +488,8 @@ export function main(argString = ""): void {
 
         // 2. do some embezzler stuff
         freeFights();
-        yachtzeeChain();
         dailyFights();
+        yachtzeeChain();
 
         if (!globalOptions.nobarf) {
           // 3. burn turns at barf

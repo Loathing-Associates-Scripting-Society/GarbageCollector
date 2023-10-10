@@ -141,13 +141,6 @@ You can use multiple options in conjunction, e.g. "garbo nobarf ascend"',
           help: "Set to whatever you estimate the value of a free fight/run to be for you. (Default 2000)",
           default: 2000,
         }),
-        yachtzeechain: Args.flag({
-          setting: "garbo_yachtzeechain",
-          help: "only diets after free fights, and attempts to estimate if Yachtzee! chaining is profitable for you - if so, it consumes a specific diet which uses ~0-36 spleen;\
-      if not it automatically continues with the regular diet. Requires Spring Break Beach access (it will not grab a one-day pass for you, but will make an attempt if one is used).\
-      Sweet Synthesis is strongly recommended, as with access to other meat% buffs from Source Terminal, Fortune Teller, KGB and the summoning chamber. Having access to a PYEC (on hand or in the clan stash) is a plus.",
-          default: false,
-        }),
         candydish: Args.flag({
           setting: "garbo_candydish",
           help: "*DANGEROUS* garbo will consider using porcelain candy dishes. This could result in potentially destructive behavior in the instance that the user does not have sufficient meat (1-2 million) to purchase as many dishes as garbo desires or there is a price cliff.",

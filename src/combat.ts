@@ -456,7 +456,6 @@ export class Macro extends StrictMacro {
 
   kill(): Macro {
     const riftId = toInt($location`Shadow Rift`);
-    const doingYachtzee = globalOptions.prefs.yachtzeechain && !get("_garboYachtzeeChainCompleted");
     const canPinata = haveEquipped($item`Cincho de Mayo`) && CinchoDeMayo.currentCinch() >= 5;
     return (
       this.externalIf(
@@ -464,7 +463,7 @@ export class Macro extends StrictMacro {
         Macro.trySkill($skill`Curse of Weaksauce`),
       )
         .externalIf(
-          !doingYachtzee && canPinata,
+          canPinata,
           Macro.while_(
             `hasskill ${
               $skill`Cincho: Projectile Piñata`.id

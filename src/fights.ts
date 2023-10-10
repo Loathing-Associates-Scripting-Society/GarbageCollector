@@ -1505,8 +1505,8 @@ const freeFightSources = [
         return true; // Get the artifact or kill the boss immediately for free
       }
 
-      // Consider forcing noncombats below:
-      if (globalOptions.prefs.yachtzeechain) return false; // NCs are better when yachtzeeing, probably
+      if (realmAvailable("sleaze")) return false;
+
       // TODO: With the KoL update, is there a function for checking if an NC is already forced?
       if (have($item`Clara's bell`) && !globalOptions.clarasBellClaimed) {
         return true;
@@ -2163,9 +2163,6 @@ export function freeRunFights(): void {
     1324: 5, // Fight a random partier
   });
 
-  const onlyPriorityRuns =
-    globalOptions.prefs.yachtzeechain && !get("_garboYachtzeeChainCompleted", false);
-
   const stashRun = stashAmount($item`navel ring of navel gazing`)
     ? $items`navel ring of navel gazing`
     : stashAmount($item`Greatest American Pants`)
@@ -2177,7 +2174,6 @@ export function freeRunFights(): void {
     for (const priorityRunFight of priorityFreeRunFightSources) {
       priorityRunFight.runAll();
     }
-    if (onlyPriorityRuns) return;
     for (const freeRunFightSource of freeRunFightSources) {
       freeRunFightSource.runAll();
     }
@@ -2739,7 +2735,6 @@ function runShadowRiftTurn(): void {
   // we can probably have a better name
   if (get("encountersUntilSRChoice") === 0) return;
   if (
-    globalOptions.prefs.yachtzeechain ||
     get("rufusQuestType") === "items" ||
     get("rufusQuestType") === "entity" // We can't handle bosses... yet
   ) {
