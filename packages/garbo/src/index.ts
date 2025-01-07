@@ -421,7 +421,7 @@ export function main(argString = ""): void {
       mpAutoRecoveryItems: mpItems,
       afterAdventureScript: "",
       betweenBattleScript: "",
-      choiceAdventureScript: "",
+      choiceAdventureScript: "garbo_choice.js",
       counterScript: "",
       familiarScript: "",
       currentMood: "apathetic",

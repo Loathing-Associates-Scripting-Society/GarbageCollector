@@ -22,6 +22,7 @@ const context = await esbuild.context({
   },
   entryPoints: {
     "scripts/garbage-collector/garbo": "src/index.ts",
+    "scripts/garbage-collector/garbo_choice": "src/garboChoice.ts",
     "relay/relay_garbo": "src/relay_garbo.ts",
   },
   entryNames: "[dir]/[name]",

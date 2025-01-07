@@ -86,15 +86,19 @@ import { trackMarginalMpa } from "../session";
 import { garboValue } from "../garboValue";
 import {
   bestMidnightAvailable,
+  canBullseye,
   completeBarfQuest,
+  guaranteedBullseye,
+  hotTubAvailable,
+  lavaDogsAccessible,
+  lavaDogsComplete,
   minimumMimicExperience,
+  safeToAttemptBullseye,
   shouldFillLatte,
+  shouldMakeEgg,
   tryFillLatte,
 } from "../resources";
 import { acquire } from "../acquire";
-import { shouldMakeEgg } from "../resources";
-import { lavaDogsAccessible, lavaDogsComplete } from "../resources/doghouse";
-import { hotTubAvailable } from "../resources/clanVIP";
 import { meatMood } from "../mood";
 
 const digitizedTarget = () =>
@@ -824,6 +828,27 @@ const BarfTurnTasks: GarboTask[] = [
   ),
   wanderTask(
     "freefight",
+    {
+      acc1: $item`Everfull Dart Holster`,
+      acc2: guaranteedBullseye() ? [] : $item`spring shoes`,
+      modifier: guaranteedBullseye() ? [] : "Monster Level",
+    },
+    {
+      name: "Darts: Bullseye",
+      ready: safeToAttemptBullseye,
+      completed: () => !canBullseye(),
+      combat: new GarboStrategy(() =>
+        Macro.if_(globalOptions.target, Macro.meatKill())
+          .familiarActions()
+          .skill($skill`Darts: Aim for the Bullseye`)
+          .skill($skill`Spring Away`),
+      ),
+      sobriety: "sober",
+      duplicate: true,
+    },
+  ),
+  wanderTask(
+    "freefight",
     {},
     {
       name: "Heavy Rains Lightning Strike",
@@ -867,7 +892,11 @@ const BarfTurnTasks: GarboTask[] = [
         have($item`spring shoes`) &&
         romanticMonsterImpossible() &&
         (getWorkshed() !== $item`model train set` ||
-          TrainSet.next() !== TrainSet.Station.GAIN_MEAT),
+          TrainSet.next() !== TrainSet.Station.GAIN_MEAT) &&
+        (guaranteedBullseye() ||
+          !safeToAttemptBullseye() ||
+          have($skill`Free-For-All`) ||
+          have($effect`Everything Looks Red`, 30)),
       completed: () => have($effect`Everything Looks Green`),
       combat: new GarboStrategy(
         () =>

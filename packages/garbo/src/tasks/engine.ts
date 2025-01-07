@@ -44,6 +44,11 @@ function logTargetFight(encounterType: string) {
  * Runs extra logic before executing all tasks.
  */
 export class BaseGarboEngine extends Engine<never, GarboTask> {
+  static defaultSettings = {
+    ...Engine.defaultSettings,
+    choiceAdventureScript: "garbo_choice.js",
+  };
+
   available(task: GarboTask): boolean {
     safeInterrupt();
     const taskSober = undelay(task.sobriety);
