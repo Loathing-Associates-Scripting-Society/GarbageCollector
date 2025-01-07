@@ -1,14 +1,19 @@
 import {
+  autosellPrice,
   descToItem,
+  Effect,
   handlingChoice,
   Item,
+  mallPrice,
   runChoice,
+  toSlot,
   visitUrl,
 } from "kolmafia";
 import {
   $item,
   $items,
   $monsters,
+  $slot,
   arrayEquals,
   get,
   maxBy,
@@ -21,6 +26,7 @@ import { candyFactoryValue } from "../lib";
 import { garboAverageValue, garboValue } from "../garboValue";
 import { estimatedGarboTurns } from "../turns";
 import { copyTargetCount } from "../target";
+import { Potion } from "../potions";
 
 const GOOD_TRAIN_STATIONS = [
   { piece: TrainSet.Station.GAIN_MEAT, value: () => 900 },
@@ -156,4 +162,63 @@ export function grabMedicine(): void {
     runChoice(bestChoice);
   }
   if (handlingChoice()) visitUrl("main.php");
+}
+
+// Function to calculate the value for each item
+function calculateItemValue(item: Item, effect: Effect): number {
+  return (
+    new Potion($item`diabolic pizza`, {
+      effect: effect,
+      duration: Math.sqrt(autosellPrice(item)),
+    }).gross(copyTargetCount()) -
+    mallPrice(item) +
+    (toSlot(item) === $slot`familiar`
+      ? mallPrice($item`box of Familiar Jacks`)
+      : 0) +
+    item.name.length / 10
+  );
+}
+
+// Consolidated function to get the best item for a given letter
+function bestPizzaItemForLetter(letter: string, effect: Effect): Item {
+  const items = $items.all().filter((i) => i.name.startsWith(letter));
+
+  const itemsWithValues = items.map((item) => ({
+    item,
+    value: calculateItemValue(item, effect),
+  }));
+
+  return maxBy(itemsWithValues, (entry) => entry.value).item;
+}
+
+// Function to design the pizza based on the effect's name letters
+function designPizza(effect: Effect): Item[] {
+  return effect.name
+    .substring(0, 4)
+    .split("")
+    .map((letter) => bestPizzaItemForLetter(letter, effect));
+}
+
+// Simulation to calculate pizza cost and benefit
+export function simCreatePizza(effect: Effect): [number, number] {
+  const pizzaItems = designPizza(effect);
+
+  const benefit = pizzaItems.reduce(
+    (acc, it) => acc + calculateItemValue(it, effect),
+    0,
+  );
+  const cost = pizzaItems.reduce((acc, it) => acc + mallPrice(it), 0);
+
+  return [cost, benefit];
+}
+
+// Function to create the pizza by calling the appropriate URL
+export function createPizza(effect: Effect) {
+  const pizzaItems = designPizza(effect);
+
+  visitUrl(
+    `campground.php?action=makepizza&pizza=${pizzaItems.map((item) => item.id).join(",")}`,
+    true,
+    true,
+  );
 }
