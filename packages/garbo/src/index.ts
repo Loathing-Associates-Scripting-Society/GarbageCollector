@@ -76,7 +76,7 @@ import {
 } from "./lib";
 import { meatMood, useBuffExtenders } from "./mood";
 import { potionSetup } from "./potions";
-import { endSession, startSession } from "./session";
+import { endSession, startSession, trackMarginalMpa } from "./session";
 import { estimatedGarboTurns } from "./turns";
 import { yachtzeeChain } from "./yachtzee";
 import { garboAverageValue } from "./garboValue";
@@ -585,6 +585,7 @@ export function main(argString = ""): void {
           }
         } else setAutoAttack(0);
       });
+      trackMarginalMpa(0);
     });
   } finally {
     cliExecute("spade autoconfirm");
