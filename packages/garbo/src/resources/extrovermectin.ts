@@ -44,6 +44,7 @@ import { freeFightFamiliar } from "../familiar";
 import {
   freeRunConstraints,
   getUsingFreeBunnyBanish,
+  isFree,
   lastAdventureWasWeird,
   ltbRun,
   setChoice,
@@ -62,6 +63,12 @@ type GregSource = {
   replaces: number;
   extra: number;
 };
+
+export const totalReplacers = () =>
+  (have($skill`Meteor Lore`) ? 10 - get("_macrometeoriteUses") : 0) +
+  (have($item`Powerful Glove`)
+    ? Math.floor((100 - get("_powerfulGloveBatteryPowerUsed")) / 10)
+    : 0);
 
 export function expectedGregs(skillSource: "habitat" | "extro"): number[] {
   const habitatCharges = have($skill`Just the Facts`)
@@ -95,20 +102,13 @@ export function expectedGregs(skillSource: "habitat" | "extro"): number[] {
 
   const orbGregs = have($item`miniature crystal ball`) ? 1 : 0;
 
-  const macrometeors = have($skill`Meteor Lore`)
-    ? 10 - get("_macrometeoriteUses")
-    : 0;
-  const replaceEnemies = have($item`Powerful Glove`)
-    ? Math.floor((100 - get("_powerfulGloveBatteryPowerUsed")) / 10)
-    : 0;
-
   const firstReplaces = clamp(
     replacementsPerGreg(baseGregs[0]),
     0,
-    macrometeors + replaceEnemies,
+    totalReplacers(),
   );
   const initialCast: { replacesLeft: number; sources: GregSource[] } = {
-    replacesLeft: macrometeors + replaceEnemies - firstReplaces,
+    replacesLeft: totalReplacers() - firstReplaces,
     sources: [
       {
         ...baseGregs[0],
@@ -174,7 +174,9 @@ export function crateStrategy(): "Sniff" | "Saber" | "Orb" | null {
   ) {
     return "Sniff";
   }
-  if (have($item`miniature crystal ball`)) return "Orb";
+  if (have($item`miniature crystal ball`) && !isFree(globalOptions.target)) {
+    return "Orb";
+  }
   if (have($item`Fourth of May Cosplay Saber`) && get("_saberForceUses") < 5) {
     return "Saber";
   }

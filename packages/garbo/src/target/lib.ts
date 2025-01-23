@@ -111,3 +111,41 @@ export function changeLastAdvLocationTask(): {
       };
   }
 }
+
+export function puttyLeft(): number {
+  const havePutty = have($item`Spooky Putty sheet`);
+  const havePuttyMonster = have($item`Spooky Putty monster`);
+  const haveRainDoh = have($item`Rain-Doh black box`);
+  const haveRainDohMonster = have($item`Rain-Doh box full of monster`);
+
+  const puttyUsed = get("spookyPuttyCopiesMade");
+  const rainDohUsed = get("_raindohCopiesMade");
+  const hardLimit = 6 - puttyUsed - rainDohUsed;
+  let monsterCount = 0;
+  let puttyLeft = 5 - puttyUsed;
+  let rainDohLeft = 5 - rainDohUsed;
+
+  if (!havePutty && !havePuttyMonster) {
+    puttyLeft = 0;
+  }
+  if (!haveRainDoh && !haveRainDohMonster) {
+    rainDohLeft = 0;
+  }
+
+  if (havePuttyMonster) {
+    if (get("spookyPuttyMonster") === globalOptions.target) {
+      monsterCount++;
+    } else {
+      puttyLeft = 0;
+    }
+  }
+  if (haveRainDohMonster) {
+    if (get("rainDohMonster") === globalOptions.target) {
+      monsterCount++;
+    } else {
+      rainDohLeft = 0;
+    }
+  }
+  const naiveLimit = Math.min(puttyLeft + rainDohLeft, hardLimit);
+  return naiveLimit + monsterCount;
+}

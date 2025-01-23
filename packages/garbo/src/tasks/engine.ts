@@ -30,6 +30,26 @@ export type GarboTask = StrictCombatTask<never, GarboStrategy> & {
   duplicate?: Delayed<boolean>;
 };
 
+export type CopyTargetTask = (GarboTask & {
+  canInitializeWandererCounters?: boolean;
+}) &
+  (
+    | {
+        fightType:
+          | "wanderer"
+          | "backup"
+          | "regular"
+          | "conditional"
+          | "chainstarter"
+          | "gregarious"
+          | "emergencychainstarter"
+          | "fake";
+        wrongEncounterName?: boolean;
+        amount?: () => number;
+      }
+    | { fightType?: undefined }
+  );
+
 function logTargetFight(encounterType: string) {
   const isDigitize = encounterType.includes("Digitize Wanderer");
   if (isDigitize) {
@@ -43,8 +63,8 @@ function logTargetFight(encounterType: string) {
 /** A base engine for Garbo!
  * Runs extra logic before executing all tasks.
  */
-export class BaseGarboEngine extends Engine<never, GarboTask> {
-  available(task: GarboTask): boolean {
+export class BaseGarboEngine<T extends GarboTask> extends Engine<never, T> {
+  available(task: T): boolean {
     safeInterrupt();
     const taskSober = undelay(task.sobriety);
     if (taskSober) {
@@ -57,7 +77,7 @@ export class BaseGarboEngine extends Engine<never, GarboTask> {
     return super.available(task);
   }
 
-  dress(task: GarboTask, outfit: Outfit) {
+  dress(task: T, outfit: Outfit) {
     const duplicate = undelay(task.duplicate);
     if (duplicate && have($item`pro skateboard`) && !get("_epicMcTwistUsed")) {
       outfit.equip($item`pro skateboard`);
@@ -68,12 +88,12 @@ export class BaseGarboEngine extends Engine<never, GarboTask> {
     }
   }
 
-  prepare(task: GarboTask): void {
+  prepare(task: T): void {
     if ("combat" in task) safeRestore();
     super.prepare(task);
   }
 
-  execute(task: GarboTask): void {
+  execute(task: T): void {
     const spentTurns = totalTurnsPlayed();
     const duplicate = undelay(task.duplicate);
     const before = SourceTerminal.getSkills();
@@ -108,7 +128,7 @@ export class BaseGarboEngine extends Engine<never, GarboTask> {
  * A safe engine for Garbo!
  * Treats soft limits as tasks that should be skipped, with a default max of one attempt for any task.
  */
-export class SafeGarboEngine extends BaseGarboEngine {
+export class SafeGarboEngine extends BaseGarboEngine<GarboTask> {
   constructor(tasks: GarboTask[]) {
     const options = new EngineOptions();
     options.default_task_options = { limit: { skip: 1 } };
@@ -116,9 +136,9 @@ export class SafeGarboEngine extends BaseGarboEngine {
   }
 }
 
-function runQuests<T extends typeof BaseGarboEngine>(
-  quests: Quest<GarboTask>[],
-  garboEngine: T,
+function runQuests<T extends GarboTask, E extends typeof BaseGarboEngine<T>>(
+  quests: Quest<T>[],
+  garboEngine: E,
 ) {
   const engine = new garboEngine(getTasks(quests));
 
