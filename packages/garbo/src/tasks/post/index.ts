@@ -2,6 +2,7 @@ import {
   adv1,
   availableChoiceOptions,
   canAdventure,
+  canEquip,
   cliExecute,
   inebrietyLimit,
   itemAmount,
@@ -32,6 +33,7 @@ import {
   getRemainingStomach,
   have,
   JuneCleaver,
+  SongBoom,
   undelay,
   uneffect,
   withProperty,
@@ -49,7 +51,7 @@ import { teleportEffects } from "../../mood";
 import { Quest } from "grimoire-kolmafia";
 import { estimatedGarboTurns, remainingUserTurns } from "../../turns";
 import { acquire } from "../../acquire";
-import { garboAverageValue } from "../../garboValue";
+import { garboAverageValue, garboValue } from "../../garboValue";
 import workshedTasks from "./worksheds";
 import { GarboPostTask } from "./lib";
 import { GarboTask } from "../engine";
@@ -339,6 +341,38 @@ function handleDrenchedInLava(): GarboPostTask {
   };
 }
 
+const MEAT_CLIP_VALUE = 520;
+function songBoom(): GarboPostTask[] {
+  const willDrunkAdventure =
+    globalOptions.ascend &&
+    have($item`Drunkula's wineglass`) &&
+    canEquip($item`Drunkula's wineglass`);
+  return [
+    {
+      name: "Adjust Songboom: Meat",
+      available: () => SongBoom.have() && myInebriety() < inebrietyLimit(),
+      sobriety: "sober",
+      completed: () => SongBoom.song() === "Total Eclipse of Your Meat",
+      ready: () =>
+        SongBoom.dropProgress() < 11 &&
+        SongBoom.songChangesLeft() > 1 + Number(willDrunkAdventure),
+      do: () => SongBoom.setSong("Total Eclipse of Your Meat"),
+    },
+    {
+      name: "Adjust Songboom: Seasoning",
+      available: () =>
+        SongBoom.have() &&
+        myInebriety() < inebrietyLimit() &&
+        garboValue($item`Special Seasoning`) > MEAT_CLIP_VALUE,
+      completed: () => SongBoom.song() === "Food Vibrations",
+      ready: () =>
+        SongBoom.dropProgress() === 11 &&
+        SongBoom.songChangesLeft() > 2 + Number(willDrunkAdventure),
+      do: () => SongBoom.setSong("Food Vibrations"),
+    },
+  ];
+}
+
 export function PostQuest(completed?: () => boolean): Quest<GarboTask> {
   return {
     name: "Postcombat",
@@ -359,6 +393,7 @@ export function PostQuest(completed?: () => boolean): Quest<GarboTask> {
       refillCinch(),
       leafResin(),
       wardrobeOMatic(),
+      ...songBoom(),
     ]
       .filter(({ available }) => undelay(available ?? true))
       .map((task) => ({ ...task, spendsTurn: false })),
