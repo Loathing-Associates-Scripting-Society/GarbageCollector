@@ -1,6 +1,7 @@
 import { OutfitSpec, Quest } from "grimoire-kolmafia";
 import {
   cliExecute,
+  getCampground,
   mallPrice,
   myClass,
   myMaxmp,
@@ -9,10 +10,21 @@ import {
   use,
   useSkill,
 } from "kolmafia";
-import { $class, $item, $skill, $thrall, get, have, maxBy } from "libram";
-import { baseMeat } from "../lib";
+import {
+  $class,
+  $item,
+  $location,
+  $skill,
+  $thrall,
+  get,
+  have,
+  maxBy,
+} from "libram";
+import { baseMeat, setChoice } from "../lib";
 import { estimatedGarboTurns } from "../turns";
 import { GarboTask } from "./engine";
+import { globalOptions } from "../config";
+import { garboAdventure, Macro } from "../combat";
 
 function bestVykeaLevel(): number {
   const vykeas = [
@@ -67,6 +79,28 @@ const PostFreeFightTasks: GarboTask[] = [
       myThrall() !== $thrall.none,
     completed: () => get("_pastaAdditive") || myThrall().level >= 10,
     do: () => use($item`experimental carbon fiber pasta additive`),
+    spendsTurn: false,
+  },
+  {
+    name: "Tend Mushroom Garden",
+    ready: () =>
+      (have($item`packet of mushroom spores`) ||
+        getCampground()["packet of mushroom spores"] !== undefined) &&
+      get("_mushroomGardenFights") > 0,
+    completed: () => get("_mushroomGardenVisited") === true,
+    do: () => {
+      if (have($item`packet of mushroom spores`)) {
+        use($item`packet of mushroom spores`);
+      }
+      setChoice(
+        1410,
+        globalOptions.ascend || get("mushroomGardenCropLevel") >= 11 ? 2 : 1,
+      );
+      garboAdventure($location`Your Mushroom Garden`, Macro.basicCombat());
+      if (have($item`packet of tall grass seeds`)) {
+        use($item`packet of tall grass seeds`);
+      }
+    },
     spendsTurn: false,
   },
 ];
