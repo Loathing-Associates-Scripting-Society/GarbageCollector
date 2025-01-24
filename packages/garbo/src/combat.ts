@@ -868,28 +868,23 @@ type CustomizeMacroOptions = {
   tentacle: (macro: StrictMacro) => Macro;
   innateWanderer: (macro: StrictMacro) => Macro;
 };
-const DEFAULT_MACRO_OPTIONS = {
-  freeWanderer: () => Macro.basicCombat(),
-  tentacle: () => Macro.basicCombat(),
-  innateWanderer: (macro: StrictMacro) =>
-    Macro.externalIf(
-      haveEquipped($item`backup camera`) &&
-        get("_backUpUses") < 11 &&
-        get("lastCopyableMonster") === globalOptions.target &&
-        (!targettingMeat() || myFamiliar() === meatFamiliar()),
-      Macro.skill($skill`Back-Up to your Last Enemy`).step(macro),
-      Macro.basicCombat(),
-    ),
-} as const satisfies CustomizeMacroOptions;
 
 function customizeMacro<M extends StrictMacro>(
   macro: M,
-  options: Partial<CustomizeMacroOptions> = {},
+  {
+    freeWanderer = () => Macro.basicCombat(),
+    tentacle = () => Macro.basicCombat(),
+    innateWanderer = (macro: StrictMacro) =>
+      Macro.externalIf(
+        haveEquipped($item`backup camera`) &&
+          get("_backUpUses") < 11 &&
+          get("lastCopyableMonster") === globalOptions.target &&
+          (!targettingMeat() || myFamiliar() === meatFamiliar()),
+        Macro.skill($skill`Back-Up to your Last Enemy`).step(macro),
+        Macro.basicCombat(),
+      ),
+  } = {} as Partial<CustomizeMacroOptions>,
 ) {
-  const { freeWanderer, tentacle, innateWanderer } = {
-    ...DEFAULT_MACRO_OPTIONS,
-    ...options,
-  };
   return Macro.if_(
     $monsters`giant rubber spider, time-spinner prank`,
     freeWanderer(macro),

@@ -142,11 +142,6 @@ export type WanderOptions = {
 
 export type WanderDetails = DraggableFight | WanderOptions;
 
-const defaultWanderOptions = {
-  drunkSafe: true,
-  allowEquipment: true,
-};
-
 export class WandererManager {
   private unsupportedChoices = new Map<
     Location,
@@ -254,10 +249,7 @@ export class WandererManager {
     const { draggableFight, options } = isDraggableFight(wanderer)
       ? { draggableFight: wanderer, options: {} }
       : { draggableFight: wanderer.wanderer, options: wanderer };
-    const { drunkSafe, allowEquipment } = {
-      ...defaultWanderOptions,
-      ...options,
-    };
+    const { drunkSafe = true, allowEquipment = false } = options;
     const newKey = `${myTotalTurnsSpent()};${totalTurnsPlayed()};${get(
       "familiarSweat",
     )}`;

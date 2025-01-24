@@ -36,28 +36,18 @@ type MenuOptions = Partial<{
   allowAttackFamiliars: boolean;
   mode: "barf" | "free" | "target";
 }>;
-const DEFAULT_MENU_OPTIONS = {
-  canChooseMacro: true,
-  location: $location`none`,
-  extraFamiliars: [],
-  excludeFamiliar: [],
-  includeExperienceFamiliars: true,
-  allowAttackFamiliars: true,
-  mode: "free",
-} as const;
-export function menu(options: MenuOptions = {}): GeneralFamiliar[] {
-  const {
-    includeExperienceFamiliars,
-    canChooseMacro,
-    location,
-    extraFamiliars,
-    excludeFamiliar,
-    allowAttackFamiliars,
-    mode,
-  } = {
-    ...DEFAULT_MENU_OPTIONS,
-    ...options,
-  };
+
+export function menu(
+  {
+    canChooseMacro = true,
+    location = $location`none`,
+    extraFamiliars = [],
+    excludeFamiliar = [],
+    includeExperienceFamiliars = true,
+    allowAttackFamiliars = true,
+    mode = "free",
+  } = {} as MenuOptions,
+): GeneralFamiliar[] {
   const familiarMenu = [
     ...getConstantValueFamiliars(mode),
     ...getDropFamiliars(),
@@ -179,7 +169,7 @@ export function getAllJellyfishDrops(): {
 }
 
 export function freeFightFamiliarData(
-  options: MenuOptions = {},
+  options: Partial<MenuOptions> = {},
 ): GeneralFamiliar {
   const compareFamiliars = (a: GeneralFamiliar, b: GeneralFamiliar) => {
     if (a === null) return b;

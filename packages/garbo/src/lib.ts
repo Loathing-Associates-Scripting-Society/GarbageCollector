@@ -715,23 +715,16 @@ type LastAdventureOptions = {
   includeJuneCleaver: boolean;
   includeVioletFog: boolean;
 };
-const DEFAULT_LAST_ADVENTURE_OPTIONS = {
-  extraEncounters: [],
-  includeGhostDog: true,
-  includeHolidayWanderers: true,
-  includeJuneCleaver: true,
-  includeVioletFog: true,
-} as const;
+
 export function lastAdventureWasWeird(
-  options: Partial<LastAdventureOptions> = {},
+  {
+    extraEncounters = [],
+    includeGhostDog = true,
+    includeHolidayWanderers = true,
+    includeJuneCleaver = true,
+    includeVioletFog = true,
+  } = {} as Partial<LastAdventureOptions>,
 ): boolean {
-  const {
-    extraEncounters,
-    includeGhostDog,
-    includeHolidayWanderers,
-    includeJuneCleaver,
-    includeVioletFog,
-  } = { ...DEFAULT_LAST_ADVENTURE_OPTIONS, ...options };
   return [
     ...extraEncounters,
     ...(includeGhostDog ? GHOST_DOG_ADVENTURES : []),
