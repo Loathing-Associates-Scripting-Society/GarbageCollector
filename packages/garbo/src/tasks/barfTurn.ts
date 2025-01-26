@@ -5,6 +5,7 @@ import {
   canAdventure,
   canEquip,
   eat,
+  getClanLounge,
   getWorkshed,
   Item,
   itemAmount,
@@ -22,6 +23,7 @@ import {
   outfitPieces,
   retrieveItem,
   runChoice,
+  Skill,
   totalTurnsPlayed,
   use,
   useSkill,
@@ -50,6 +52,7 @@ import {
   maxBy,
   questStep,
   realmAvailable,
+  RetroCape,
   set,
   SourceTerminal,
   sum,
@@ -955,7 +958,54 @@ const BarfTurnTasks: GarboTask[] = [
     combat: new GarboStrategy(() => Macro.meatKill()),
     spendsTurn: () => globalOptions.target.attributes.includes("FREE"),
   },
+  {
+    name: "Other Yellow Rays",
+    ready: () => have($skill`Just the Facts`) && get("_bookOfFactsWishes") < 3, // the only way we can guarantee this is profitable
+    completed: () => have($effect`Everything Looks Yellow`),
+    prepare: () => {
+      const yellowRay = bestYellowRay();
+      if (yellowRay instanceof Item) {
+        retrieveItem(yellowRay);
+      }
+    },
+    do: () => wanderer().getTarget(undelay("yellow ray")),
+    outfit: () => meatTargetOutfit(),
+    combat: new GarboStrategy(() =>
+      Macro.if_(globalOptions.target, Macro.meatKill())
+        .familiarActions()
+        .duplicate()
+        .externalIf(
+          bestYellowRay() instanceof Skill,
+          Macro.trySkill(bestYellowRay() as Skill),
+          Macro.tryItem(bestYellowRay() as Item),
+        ),
+    ),
+    spendsTurn: () => true,
+  },
 ];
+
+function bestYellowRay(): Skill | Item {
+  if (have($item`Roman Candelabra`)) {
+    return $skill`Blow the Yellow Candle!`;
+  }
+
+  if (
+    have($item`Clan VIP Lounge key`) &&
+    getClanLounge()["clan underground fireworks shop"] !== undefined
+  ) {
+    return $item`yellow rocket`;
+  }
+
+  if (RetroCape.have()) {
+    return $skill`Unleash the Devil's Kiss`;
+  }
+
+  if (have($skill`Disintegrate`)) {
+    return $skill`Disintegrate`;
+  }
+
+  return $item`viral video`;
+}
 
 function nonBarfTurns(): number {
   return sum(
